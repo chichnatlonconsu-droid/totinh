@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lời tỏ tình</title>
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:Arial;
+background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+overflow:hidden;
+}
+
+/* khung */
+
+.box{
+text-align:center;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+width:90%;
+max-width:360px;
+z-index:10;
+}
+
+/* nút */
+
+button{
+padding:12px 25px;
+font-size:16px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+margin:10px;
+}
+
+#yes{
+background:#ff4d6d;
+color:white;
+}
+
+#no{
+background:#ccc;
+position:absolute;
+}
+
+/* tiến trình */
+
+.progress{
+width:100%;
+height:10px;
+background:#eee;
+border-radius:10px;
+margin-top:15px;
+}
+
+.bar{
+height:100%;
+width:0%;
+background:#ff4d6d;
+border-radius:10px;
+transition:0.3s;
+}
+
+/* lời cầu xin */
+
+#begText{
+margin-top:12px;
+color:#ff4d6d;
+font-weight:bold;
+min-height:25px;
+font-size:15px;
+}
+
+/* tim */
+
+.heart{
+position:fixed;
+top:-10px;
+font-size:20px;
+animation:fall linear forwards;
+}
+
+@keyframes fall{
+to{
+transform:translateY(110vh);
+opacity:0;
+}
+}
+
+/* hoa */
+
+.flower{
+position:fixed;
+top:-10px;
+font-size:20px;
+animation:fall linear forwards;
+}
+
+/* pháo */
+
+.boom{
+position:fixed;
+font-size:25px;
+animation:boom 1s forwards;
+}
+
+@keyframes boom{
+0%{transform:scale(0)}
+100%{transform:scale(2);opacity:0}
+}
+
+/* nút nhạc */
+
+#musicBtn{
+position:fixed;
+top:15px;
+right:15px;
+background:white;
+padding:8px 12px;
+border-radius:10px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="musicBtn">🎵</div>
+
+<audio id="music" loop>
+<source src="iu-la-day.mp3">
+</audio>
+
+<div class="box">
+
+<h1>Tớ thích cậu rất nhiều ❤️</h1>
+<p>Cậu có đồng ý làm người yêu tớ không?</p>
+
+<button id="yes">Đồng ý</button>
+<button id="no">Không đồng ý</button>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+<div id="begText"></div>
+
+</div>
+
+<script>
+
+/* tim */
+
+function createHeart(){
+let heart=document.createElement("div")
+heart.className="heart"
+heart.innerHTML="❤️"
+heart.style.left=Math.random()*100+"vw"
+heart.style.animationDuration=(3+Math.random()*3)+"s"
+document.body.appendChild(heart)
+setTimeout(()=>heart.remove(),6000)
+}
+setInterval(createHeart,400)
+
+/* hoa */
+
+function createFlower(){
+let f=document.createElement("div")
+f.className="flower"
+f.innerHTML="🌹"
+f.style.left=Math.random()*100+"vw"
+f.style.animationDuration=(4+Math.random()*4)+"s"
+document.body.appendChild(f)
+setTimeout(()=>f.remove(),7000)
+}
+setInterval(createFlower,900)
+
+/* pháo */
+
+function heartBoom(){
+for(let i=0;i<40;i++){
+let boom=document.createElement("div")
+boom.className="boom"
+boom.innerHTML="💖"
+boom.style.left=Math.random()*100+"vw"
+boom.style.top=Math.random()*100+"vh"
+document.body.appendChild(boom)
+setTimeout(()=>boom.remove(),1000)
+}
+}
+
+/* nhạc */
+
+let music=document.getElementById("music")
+let musicBtn=document.getElementById("musicBtn")
+
+musicBtn.onclick=function(){
+if(music.paused){
+music.play()
+musicBtn.innerHTML="🔊"
+}else{
+music.pause()
+musicBtn.innerHTML="🔇"
+}
+}
+
+/* logic */
+
+let noBtn=document.getElementById("no")
+let yesBtn=document.getElementById("yes")
+let bar=document.getElementById("bar")
+let begText=document.getElementById("begText")
+
+let count=0
+let messageIndex=0
+
+let messages=[
+"Xin cậu đó 😭 Cho tớ một cơ hội được không?",
+"Đừng bấm nữa mà 🥺 Tớ thích cậu thật đó!",
+"Cho tớ thử làm người yêu cậu một lần thôi 💔",
+"Nếu cậu bấm nữa tớ buồn đó 😢",
+"Thôi mà đồng ý đi 😭 Tớ hứa sẽ tốt với cậu!"
+]
+
+function moveButton(){
+
+let yesRect=yesBtn.getBoundingClientRect()
+
+let x,y,tooClose
+
+do{
+
+x=Math.random()*(window.innerWidth-120)
+y=Math.random()*(window.innerHeight-60)
+
+let dx=Math.abs(x-yesRect.left)
+let dy=Math.abs(y-yesRect.top)
+
+tooClose=dx<120 && dy<60
+
+}while(tooClose)
+
+noBtn.style.left=x+"px"
+noBtn.style.top=y+"px"
+
+}
+
+noBtn.onclick=function(){
+
+count++
+
+bar.style.width=(count/21*100)+"%"
+
+if(count%4===0){
+begText.innerText=messages[messageIndex]
+messageIndex++
+if(messageIndex>=messages.length){
+messageIndex=0
+}
+}
+
+if(count===21){
+
+document.body.innerHTML=`
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;text-align:center">
+<h1 style="color:#ff4d6d">Đành chịu thôi... 😞</h1>
+</div>
+`
+return
+}
+
+moveButton()
+
+}
+
+/* đồng ý */
+
+yesBtn.onclick=function(){
+
+heartBoom()
+
+document.body.innerHTML=`
+
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;text-align:center">
+
+<h1 style="color:#ff4d6d">Tớ biết cậu sẽ đồng ý mà 😍</h1>
+
+<button onclick="showLetter()">💌 Đọc thư</button>
+
+</div>
+
+`
+
+}
+
+/* thư */
+
+function showLetter(){
+
+document.body.innerHTML=`
+
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;text-align:center;flex-direction:column">
+
+<h2 style="color:#ff4d6d">
+Từ lúc gặp cậu, tớ biết trái tim mình đã chọn đúng người ❤️
+</h2>
+
+<button onclick="showGift()">🎁 Mở quà</button>
+
+</div>
+
+`
+
+}
+
+/* quà */
+
+function showGift(){
+
+heartBoom()
+
+document.body.innerHTML=`
+
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;text-align:center">
+
+<h1 style="color:#ff4d6d">
+Quà của tớ là cả trái tim này dành cho cậu ❤️
+</h1>
+
+</div>
+
+`
+
+}
+
+</script>
+
+</body>
+</html>
